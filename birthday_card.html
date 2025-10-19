@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thiệp Chúc Mừng Sinh Nhật</title>
+  <style>
+    :root{--bg:#fff0f8;--card:#ffffff;--accent:#ff6b81;--text:#333}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#fff8fb 0%, #fff0f8 100%);color:var(--text);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+    .wrap{max-width:900px;width:100%;display:grid;grid-template-columns:1fr 360px;gap:24px}
+    @media(max-width:880px){.wrap{grid-template-columns:1fr;margin:0 auto}}
+    .card{background:var(--card);border-radius:20px;padding:28px;box-shadow:0 8px 30px rgba(0,0,0,0.08);position:relative;overflow:hidden}
+    .card h1{margin:0;font-size:28px;color:var(--accent)}
+    .card p.lead{margin:12px 0 20px;font-size:16px;line-height:1.5}
+    .imageArea{display:flex;gap:12px;align-items:center}
+    .photo{width:160px;height:160px;border-radius:14px;flex-shrink:0;background:linear-gradient(135deg,#ffd1dc,#ffd9f0);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .photo svg{width:90%;height:90%}
+    .message{flex:1}
+    .btns{display:flex;gap:10px;margin-top:16px}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-ghost{background:transparent;border:2px solid #ffd7e0;color:var(--accent)}
+    .sidebar{display:flex;flex-direction:column;gap:12px}
+    .panel{background:#fff;border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+    .qr{display:flex;align-items:center;justify-content:center;padding:10px}
+    footer{font-size:13px;color:#666;margin-top:12px;text-align:center}
+    .confetti{pointer-events:none;position:absolute;inset:0}
+    textarea{width:100%;min-height:120px;border-radius:8px;padding:10px;border:1px solid #eee;font-size:15px}
+    label{font-size:13px;color:#666}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="card">
+      <canvas class="confetti" id="conf"></canvas>
+      <h1>Chúc mừng sinh nhật!</h1>
+      <p class="lead">Gửi bạn lời chúc ngọt ngào nhất — chúc bạn một năm mới đầy niềm vui, thành công và thật nhiều bánh kem 🎂</p>
+
+      <div class="imageArea">
+        <div class="photo" id="photo">
+          <!-- Inline cake SVG -->
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+            <g>
+              <rect x="8" y="30" width="48" height="18" rx="3" fill="#fff2f5" stroke="#ffb3c1" />
+              <rect x="12" y="34" width="40" height="10" rx="2" fill="#ffd9e5" />
+              <path d="M24 30c0-4 8-6 16-6s16 2 16 6" fill="#fff" opacity="0.08"/>
+              <g transform="translate(16,6)">
+                <path d="M8 12c0 2 4 4 8 4s8-2 8-4v-6c0-2-4-4-8-4s-8 2-8 4v6z" fill="#ff6b81"/>
+                <rect x="11" y="6" width="2" height="10" rx="1" fill="#ffd27d"/>
+                <rect x="21" y="6" width="2" height="10" rx="1" fill="#ffd27d"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="message">
+          <label for="name">Gửi đến (tên):</label>
+          <input id="name" placeholder="Tên người nhận" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee;margin-top:8px" />
+
+          <label style="margin-top:12px;display:block">Lời chúc (tùy chỉnh):</label>
+          <textarea id="msg">Chúc mừng sinh nhật! Chúc bạn luôn vui, khỏe, và đạt mọi điều mong muốn. 🎉</textarea>
+
+          <div class="btns">
+            <button class="btn btn-primary" id="previewBtn">Xem trước</button>
+            <button class="btn btn-ghost" id="downloadBtn">Tải file HTML</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="previewArea" style="margin-top:18px;display:none">
+        <hr />
+        <h3 style="margin:8px 0">Xem trước thiệp</h3>
+        <div id="previewCard" style="padding:16px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff9fb);box-shadow:0 6px 18px rgba(0,0,0,0.03)"></div>
+      </div>
+
+      <footer>In hoặc chia sẻ đường link để người khác quét QR và xem thiệp này.</footer>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel">
+        <h4>URL / QR để chia sẻ</h4>
+        <p style="margin:6px 0;color:#444">Khi bạn đã host file này (ví dụ: GitHub Pages / Netlify), dán URL vào ô dưới để tạo QR.</p>
+        <label>URL của thiệp:</label>
+        <input id="urlInput" placeholder="https://example.com/birthday-card.html" style="width:100%;padding:8px;border-radius:8px;border:1px solid #eee;margin-top:8px" />
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-primary" id="makeQr">Tạo QR</button>
+          <button class="btn btn-ghost" id="copyUrl">Sao chép URL</button>
+        </div>
+      </div>
+
+      <div class="panel" style="text-align:center">
+        <div class="qr" id="qrWrap">
+          <img id="qrImg" alt="QR code" src="" style="width:200px;height:200px;display:block;border-radius:8px;background:#fff;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,0.06)" />
+        </div>
+        <small style="display:block;margin-top:8px;color:#666">Quét mã để mở thiệp</small>
+      </div>
+
+      <div class="panel">
+        <h4>Hướng dẫn nhanh host</h4>
+        <ol style="padding-left:18px;margin:6px 0">
+          <li>Tạo repo trên GitHub và thêm file <code>birthday-card.html</code>.</li>
+          <li>Vào Settings → Pages → chọn branch main và folder / (root) → Save.</li>
+          <li>Sau vài phút, GitHub Pages sẽ cung cấp URL dạng <code>https://{username}.github.io/{repo}/birthday-card.html</code>.</li>
+        </ol>
+        <p style="margin:6px 0;font-size:13px;color:#666">Hoặc dùng Netlify/ Vercel: kéo & thả file vào dashboard → lấy URL.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Preview + download
+    const nameInput = document.getElementById('name');
+    const msgInput = document.getElementById('msg');
+    const previewBtn = document.getElementById('previewBtn');
+    const previewArea = document.getElementById('previewArea');
+    const previewCard = document.getElementById('previewCard');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    function buildPreview(){
+      const name = nameInput.value || 'Bạn';
+      const msg = msgInput.value || '';
+      previewCard.innerHTML = `\n        <div style=\"border-radius:12px;padding:18px;\">\n          <h2 style=\"margin:0;color:var(--accent)\">Chúc mừng sinh nhật, ${escapeHtml(name)}! 🎉</h2>\n          <p style=\"margin-top:10px;font-size:16px\">${escapeHtml(msg).replace(/\n/g,'<br>')}</p>\n        </div>`;
+    }
+
+    previewBtn.addEventListener('click',()=>{previewArea.style.display='block';buildPreview();runConfetti();});
+
+    downloadBtn.addEventListener('click',()=>{
+      const blob = new Blob([generateFullHTML()],{type:'text/html;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'birthday-card.html'; document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    function generateFullHTML(){
+      const name = escapeHtml(nameInput.value||'');
+      const msg = escapeHtml(msgInput.value||'');
+      return `<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Thiệp sinh nhật</title></head><body><div style=\"font-family:system-ui;padding:24px;background:linear-gradient(#fff,#fff9fb);max-width:720px;margin:24px auto;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.06)\">`+
+        `<h1 style=\"color:#ff6b81;margin:0\">Chúc mừng sinh nhật, ${name||'Bạn'}!</h1><p style=\"font-size:16px\">${msg.replace(/\n/g,'<br>')}</p></div></body></html>`;
+    }
+
+    // simple HTML escape
+    function escapeHtml(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");}
+
+    // QR generation using api.qrserver.com
+    const makeQr = document.getElementById('makeQr');
+    const urlInput = document.getElementById('urlInput');
+    const qrImg = document.getElementById('qrImg');
+    const copyUrl = document.getElementById('copyUrl');
+
+    makeQr.addEventListener('click',()=>{
+      const u = urlInput.value.trim();
+      if(!u){alert('Vui lòng dán URL của trang thiệp đã host.');return}
+      const api = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(u);
+      qrImg.src = api;
+    });
+
+    copyUrl.addEventListener('click',()=>{navigator.clipboard.writeText(urlInput.value.trim()).then(()=>alert('Đã sao chép!'));});
+
+    // Confetti (simple)
+    function runConfetti(){
+      const c = document.getElementById('conf');
+      c.width = c.clientWidth; c.height = c.clientHeight;
+      const ctx = c.getContext('2d');
+      const pieces = [];
+      for(let i=0;i<80;i++) pieces.push({x:Math.random()*c.width,y:Math.random()*c.height- c.height,vy:1+Math.random()*3,size:4+Math.random()*8,angle:Math.random()*Math.PI*2,va:0.05*(Math.random()-.5),color:['#ff6b81','#ffd27d','#ffd9e5','#c6f6d5','#9fe8ff'][Math.floor(Math.random()*5)]});
+      let t=0;
+      function frame(){ctx.clearRect(0,0,c.width,c.height);t+=1;for(const p of pieces){p.y+=p.vy; p.angle+=p.va; ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle);ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);ctx.restore(); if(p.y>c.height+20)p.y=-20;}
+        if(t<400) requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // small helpers
+    // allow pressing Enter on name to focus message
+    nameInput.addEventListener('keydown',e=>{if(e.key==='Enter'){msgInput.focus();e.preventDefault();}});
+
+  </script>
+</body>
+</html>
